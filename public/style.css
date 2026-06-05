@@ -10,6 +10,10 @@ body {
   background: #0f172a;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 .background {
   position: fixed;
   inset: 0;
@@ -132,7 +136,7 @@ button:hover {
   display: grid;
   grid-template-columns: 330px 1fr;
   gap: 20px;
-  min-height: 700px;
+  height: 700px;
 }
 
 .side-panel,
@@ -144,13 +148,15 @@ button:hover {
 
 .side-panel {
   padding: 24px;
-  max-height: 700px;
-  overflow-y: auto;
+  height: 700px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 대화방 목록 */
 .room-section {
-  margin-bottom: 28px;
+  flex: 0 0 auto;
+  margin-bottom: 18px;
 }
 
 .room-section h3,
@@ -161,6 +167,9 @@ button:hover {
 }
 
 .room-list {
+  max-height: 155px;
+  overflow-y: auto;
+  padding-right: 4px;
   margin-bottom: 14px;
 }
 
@@ -269,20 +278,23 @@ button:hover {
 
 /* 접속자 목록 */
 .user-section {
+  flex: 0 0 auto;
   border-top: 1px solid #e5e7eb;
-  padding-top: 22px;
-  margin-top: 22px;
+  padding-top: 18px;
+  margin-top: 6px;
 }
 
 .user-section p {
-  margin-top: 8px;
+  margin: 0 0 10px;
   color: #64748b;
 }
 
 .user-list {
   list-style: none;
-  padding: 0;
-  margin-top: 20px;
+  padding: 0 4px 0 0;
+  margin: 0;
+  max-height: 120px;
+  overflow-y: auto;
 }
 
 .user-list li {
@@ -324,15 +336,19 @@ button:hover {
 
 /* 대화방 멤버 목록 */
 .member-section {
+  flex: 1;
+  min-height: 0;
   border-top: 1px solid #e5e7eb;
-  padding-top: 22px;
-  margin-top: 22px;
+  padding-top: 18px;
+  margin-top: 18px;
 }
 
 .member-list {
   list-style: none;
-  padding: 0;
+  padding: 0 4px 0 0;
   margin: 0;
+  max-height: 145px;
+  overflow-y: auto;
 }
 
 .member-list li {
@@ -407,8 +423,32 @@ button:hover {
   font-size: 10px;
 }
 
+/* 스크롤바 */
+.room-list::-webkit-scrollbar,
+.user-list::-webkit-scrollbar,
+.member-list::-webkit-scrollbar,
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.room-list::-webkit-scrollbar-thumb,
+.user-list::-webkit-scrollbar-thumb,
+.member-list::-webkit-scrollbar-thumb,
+.messages::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.room-list::-webkit-scrollbar-track,
+.user-list::-webkit-scrollbar-track,
+.member-list::-webkit-scrollbar-track,
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* 채팅 카드 */
 .chat-card {
+  height: 700px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -442,6 +482,18 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.summary-btn {
+  padding: 8px 12px;
+  background: #7c3aed;
+  color: white;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+.summary-btn:hover {
+  background: #6d28d9;
 }
 
 .live-badge {
@@ -686,6 +738,11 @@ button:hover {
 
 .chat-image {
   object-fit: cover;
+  cursor: zoom-in;
+}
+
+.chat-image:hover {
+  filter: brightness(0.95);
 }
 
 .chat-video {
@@ -696,6 +753,200 @@ button:hover {
   width: 90px;
 }
 
+/* 사진 확대 모달 */
+.image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.image-modal-img {
+  max-width: 92vw;
+  max-height: 86vh;
+  border-radius: 16px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+  background: white;
+}
+
+.image-modal-close {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal-close:hover {
+  background: #e5e7eb;
+  transform: none;
+}
+
+/* AI 요약 모달 */
+.summary-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(15, 23, 42, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.summary-box {
+  width: min(720px, 94vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+}
+
+.summary-header {
+  padding: 22px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.summary-header h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.summary-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.summary-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #111827;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.summary-close-btn:hover {
+  background: #e5e7eb;
+  transform: none;
+}
+
+.summary-content {
+  padding: 24px;
+}
+
+.summary-loading,
+.summary-error {
+  margin: 0;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.summary-error {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.summary-stats div {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.summary-stats strong {
+  display: block;
+  font-size: 26px;
+  color: #2563eb;
+}
+
+.summary-stats span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.summary-section {
+  margin-top: 20px;
+}
+
+.summary-section h4 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.summary-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.summary-section li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.summary-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summary-keywords span {
+  background: #ede9fe;
+  color: #6d28d9;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.summary-keywords em {
+  color: #64748b;
+  font-style: normal;
+}
+
+.summary-info {
+  margin-top: 22px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 16px;
+  color: #475569;
+  font-size: 14px;
+}
+
+.summary-info p {
+  margin: 6px 0;
+}
+
 /* 모바일 화면 */
 @media (max-width: 760px) {
   .app {
@@ -704,11 +955,22 @@ button:hover {
 
   .chat-layout {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .side-panel {
-    min-height: auto;
-    max-height: none;
+    height: auto;
+    overflow: visible;
+  }
+
+  .room-list,
+  .user-list,
+  .member-list {
+    max-height: 180px;
+  }
+
+  .chat-card {
+    height: 680px;
   }
 
   .message-content {
@@ -718,6 +980,11 @@ button:hover {
   .chat-header {
     align-items: center;
     gap: 10px;
+  }
+
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .create-room-box,
@@ -736,5 +1003,18 @@ button:hover {
 
   .delete-room-btn {
     width: 100%;
+  }
+
+  .image-modal {
+    padding: 16px;
+  }
+
+  .image-modal-img {
+    max-width: 94vw;
+    max-height: 82vh;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
   }
 }
